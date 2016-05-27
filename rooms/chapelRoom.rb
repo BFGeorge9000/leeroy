@@ -1,7 +1,6 @@
 class ChapelRoom
    
     def initialize()
-        @reward = false
         @keep_going = true
     end
     
@@ -23,12 +22,12 @@ class ChapelRoom
     def get_action
         choice = Game.get_input
 
-        if choice.include?("search") && !@reward
+        if choice.include?("search") && !$devout_shoulders
             @first_room_key = true
             puts "There is nothing of interest to search.  Would you like to"
             puts "approach the shadowy figure?\n\n"
             search_action
-        elsif choice.include?("search") && @reward
+        elsif choice.include?("search") && $devout_shoulders
             puts "There is nothing else of interest to search. \n\n"
         elsif choice.include?("look")
             puts "Sure, I can describe the room again for you... pay close attention.\n\n"
@@ -51,7 +50,7 @@ class ChapelRoom
             puts 'The old man congratulates you "Congratulations on making it this far, take'
             puts 'this as a reward".  The old man hands you the legendary Devout Shoulders of'
             puts "the gods.\n\n"
-            @reward = true;
+            $devout_shoulders = true;
         elsif choice.include?("no")
             puts "You ignore the shadowy figure.\n\n"
         else

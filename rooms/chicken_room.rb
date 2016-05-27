@@ -12,5 +12,16 @@ class ChickenRoom
     puts "Congratulations!  Leeroy found the magic chicken in the, um... castle."
     puts "So he gets to eat some chicken, I guess.  HOORAY!"
     puts "YOU WIN THE GAME.\n\n"
+      
+    puts "Aquired items:"
+      if (!$sword && !$devout_shoulders)
+          puts "nothing\n\n"
+      end
+      if ($sword)
+          puts "sword\n\n"
+      end
+      if ($devout_shoulders)
+          puts "devout shoulders\n\n"
+      end
   end
 end

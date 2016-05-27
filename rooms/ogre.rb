@@ -1,7 +1,6 @@
 class OgreRoom
   def initialize
     @mound = false
-    @sword = false
     @keep_going = true
   end
 
@@ -22,12 +21,12 @@ class OgreRoom
   def get_action
     choice = Game.get_input
     
-    if choice.include?("search") && !@sword
+    if choice.include?("search") && !$sword
       puts "You find a mighty sword and you now grip it in your hand!\n\n"
-      @sword = true
-    elsif choice.include?("search") && @sword && !@mound
+      $sword = true    
+    elsif choice.include?("search") && $sword && !@mound
       puts "You see what appears to be a faint outline of a door behind the large mound.\n\n"
-    elsif choice.include?("search") && @sword && @mound
+    elsif choice.include?("search") && $sword && @mound
       puts "You don't find any items of interest..."
     elsif choice.include?("look") && !@mound
       puts "You see that the mound is moving...almost as if it's breathing!\n\n"
@@ -41,15 +40,15 @@ class OgreRoom
     elsif choice.include?("sneak") && @mound
       puts "You quietly move closer to the breathing creature to get a better look.\n"
       puts "You realize that the horrible stench is actually a sleeping ogre\n\n"
-    elsif choice.include?("attack") && !@sword && !@mound
+    elsif choice.include?("attack") && !$sword && !@mound
       puts "The mound awakes and to your amazement it is a terrifying ogre!\n"
       puts "It swings its meaty first your way, clobbering you in the head.\n"
       Game.you_died("WTF, dude?")
-    elsif choice.include?("attack") && @sword && !@mound
+    elsif choice.include?("attack") && $sword && !@mound
       puts "The mound awakes and to your realization it is a terrifying ogre, but you're prepared.\n"
       puts "You swing your mighty sword its way, and it lets out a terrible cry\n"
       puts "The nasty beast has been slain! Your path to a now visible door is clear."
-    elsif choice.include?("attack") && @sword && @mound
+    elsif choice.include?("attack") && $sword && @mound
       puts "You quietly approach the sleeping ogre, \n" 
       puts "and drive your sword straight through its heart.\n"
       puts "The nasty beast has been slain! Your path to a now visible door is clear.\n\n"

@@ -1,7 +1,12 @@
 require_relative "map"
 
 class Game
-
+  
+    $sword
+    $devout_shoulders
+    $pickaxe
+    
+    
   def self.get_input
     print "--What do? >"
     return $stdin.gets.chomp
@@ -18,6 +23,10 @@ class Game
   end
 
   def initialize
+      $sword = false
+      $devout_shoulders = false
+      $pickaxe = false
+      
     Dir.glob("rooms/*.rb").each do |file|
       require_relative file
     end
