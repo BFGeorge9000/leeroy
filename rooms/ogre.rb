@@ -1,5 +1,6 @@
 class OgreRoom
-  def initialize
+	def initialize(player)
+		@player = player
     @mound = false
     @sword = false
     @ogre = false

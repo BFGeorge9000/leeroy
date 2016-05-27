@@ -1,4 +1,5 @@
 require_relative "map"
+require_relative "player"
 
 class Game
 

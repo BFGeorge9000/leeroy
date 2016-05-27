@@ -1,5 +1,5 @@
 class Wisp
-  def initialize
+	def initialize()
     @state = "Not implemented"
     @awareness = "asleep"
   end
@@ -23,7 +23,8 @@ end
 
 class WispRoom
 
-  def initialize
+	def initialize(player)
+		  @player = player
       #2-7 wisps
       @wispCount = Random.rand(6) + 2
       @wisps = Array.new(0)

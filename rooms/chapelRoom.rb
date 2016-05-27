@@ -1,14 +1,15 @@
 class ChapelRoom
    
-    def initialize()
-        @reward = false
-        @keep_going = true
-    end
+	def initialize(player)
+		@player = player
+    @reward = false
+    @keep_going = true
+	end
     
     def play
         while @keep_going
-            describe
-            get_action
+          describe
+          get_action
         end
     end
     
@@ -24,10 +25,10 @@ class ChapelRoom
         choice = Game.get_input
 
         if choice.include?("search") && !@reward
-            @first_room_key = true
-            puts "There is nothing of interest to search.  Would you like to"
-            puts "approach the shadowy figure?\n\n"
-            search_action
+					puts "The only thing of interest is the shadowy figure. \n\n"
+					puts 'Would you like to "approach" or "ignore" the figure?'
+					puts "\n"
+          search_action
         elsif choice.include?("search") && @reward
             puts "There is nothing else of interest to search. \n\n"
         elsif choice.include?("look")
@@ -46,18 +47,37 @@ class ChapelRoom
     def search_action
         choice = Game.get_input
         
-        if choice.include?("yes")
-            puts 'Upon approaching the shadowy figure, you notice it is actually an old man.'
-            puts 'The old man congratulates you "Congratulations on making it this far, take'
-            puts 'this as a reward".  The old man hands you the legendary Devout Shoulders of'
-            puts "the gods.\n\n"
-            @reward = true;
-        elsif choice.include?("no")
+        if choice.include?("approach")
+					puts "You approach the shadowy figure and notice that it's actually a feeble old man."
+					puts 'Would you like to "talk", "attack", or "ignore" him?'
+					puts "\n"
+					approach_action
+				elsif choice.include?("ignore")
             puts "You ignore the shadowy figure.\n\n"
         else
             puts "Sorry, I have no idea what you're talking about. Maybe try rephrasing?\n\n"
         end
     end
-    
-    
+	
+	def approach_action
+		choice = Game.get_input
+		
+		if choice.include?("talk")
+      puts 'The old man congratulates you "Congratulations on making it this far, take'
+      puts 'this as a reward".  The old man hands you the legendary Devout Shoulders of'
+      puts "the gods.\n\n"
+      @reward = true;
+		elsif choice.include?("attack")
+			puts "You prepare attack the old man.  Upond noticing this, the old man begins"
+			puts "conjuring a green fireball in his hands.  This looks like it may be more"
+			puts "difficult than you expected. \n\n"
+			@player.fight("the feeble old man", 5, 1)
+			puts "The slaughter the feeble old man.  Are you proud of what you've done? \n\n"
+		elsif choice.include?("ignore")        
+			puts "You ignore the shadowy figure.\n\n"
+    else
+			puts "Sorry, I have no idea what you're talking about. Maybe try rephrasing?\n\n"
+		end
+	end
+	
 end

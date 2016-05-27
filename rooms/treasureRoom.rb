@@ -1,9 +1,10 @@
 class TreasureRoom
    
-    def initialize()
-        @treasure_room_key = false
-        @keep_going = true
-    end
+	def initialize(player)
+		@player = player
+		@treasure_room_key = false
+		@keep_going = true
+	end
     
     def play
         while @keep_going

@@ -7,7 +7,8 @@ class SilverfishRoom
   }
   SILVERFISH_CHANCE = 0.5
 
-  def initialize
+	def initialize(player)
+		@player = player
     @score = 0
   end
 

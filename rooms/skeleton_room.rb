@@ -1,5 +1,6 @@
 class SkeletonRoom
-  def initialize
+	def initialize(player)
+		@player = player
     @fresh_game = true
     @first_room_key = false
     @keep_going = true
