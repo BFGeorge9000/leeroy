@@ -12,11 +12,10 @@ class SilverfishRoom
     describe
 
     while not @map.player_escaped?
-      rock = @map.get_rock_ahead
-
       if @pickaxe
         @map.print_map
 
+        rock = @map.get_rock_ahead
         if rock
           puts rock.description
         else
@@ -25,41 +24,56 @@ class SilverfishRoom
       end
 
       choice = Game.get_input
-
-      if choice.include? "mine"
-        if @pickaxe
-          @score += @map.mine
-          sleep 1
-        else
-          puts "With what, your hands!?\n\n"
-        end
-      elsif choice.include? "left"
-        @map.turn_left
-      elsif choice.include? "right"
-        @map.turn_right
-      elsif choice.include? "turn around"
-        @map.turn_around
-      elsif choice.include? "move"
-        if rock
-          puts "There's a rock there!"
-        else
-          @map.move_forward
-        end
-      elsif choice.include? "search"
-        if @pickaxe
-          puts "You do not find anything new\n\n"
-        else
-          puts "You have discovered a pickaxe!\n\n"
-          sleep 1
-          @pickaxe = true
-        end
-      elsif choice.include? "door"
-        puts "The door is locked\n\n"
-      else
-        puts "Sorry, I have no idea what you're talking about. Maybe try rephrasing?\n\n"
-      end
-
       Game.clear_screen if @pickaxe
+      act choice, rock
+      puts
+    end
+  end
+
+  def act choice, rock
+    if choice.include? "mine"
+      if @pickaxe
+        if !rock
+          puts "There's nothing there to mine, dummy!"
+        elsif rock.silverfish?
+          puts "Your score was: #{@score}"
+          Game.you_died "A silverfish attacks you, and you die."
+        else
+          @score += @map.mine
+        end
+      else
+        puts "With what, your hands!?"
+      end
+    elsif choice.include? "left"
+      @map.turn_left
+      puts
+    elsif choice.include? "right"
+      @map.turn_right
+      puts
+    elsif choice.include? "turn around"
+      @map.turn_around
+      puts
+    elsif choice.include? "move"
+      if @map.get_rock_ahead
+        puts "There's a rock there!"
+      else
+        @map.move_forward
+        puts
+      end
+    elsif choice.include? "search"
+      if @pickaxe
+        puts "You do not find anything new"
+      else
+        puts "You have discovered a pickaxe!"
+        @pickaxe = true
+        sleep 1
+        Game.clear_screen
+        puts
+      end
+    elsif choice.include? "door"
+      puts "The door is locked"
+    else
+      puts "Sorry, I have no idea what you're talking about. Maybe try rephrasing?"
     end
   end
 
@@ -99,19 +113,10 @@ class MineMap
   def mine
     rock = get_rock_ahead
 
-    if rock.nil?
-      puts "There's nothing there to mine, dummy!"
-      return 0
-    end
-
-    if rock.silverfish?
-      puts "Your score was: #{@score}"
-      Game.you_died "A silverfish attacks you, and you die."
-    end
-
-    puts "You have mined some #{rock.name}\n\n"
+    puts "You have mined some #{rock.name}"
     remove_rock_ahead
     move_forward
+
     return rock.score
   end
 
