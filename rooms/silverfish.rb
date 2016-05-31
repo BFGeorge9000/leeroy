@@ -30,6 +30,8 @@ class SilverfishRoom
     end
   end
 
+  private #####################################################################
+
   def act choice, rock
     if choice.include? "mine"
       if @pickaxe
@@ -56,6 +58,8 @@ class SilverfishRoom
     elsif choice.include? "move"
       if @map.get_rock_ahead
         puts "There's a rock there!"
+      elsif !@map.can_move_forward?
+        puts "Can't go that way!"
       else
         @map.move_forward
         puts
@@ -77,8 +81,6 @@ class SilverfishRoom
     end
   end
 
-  private #####################################################################
-
   def describe
     puts "You are standing in a damp room, somewhere underground."
     puts "Around you, water flows in small streams down the walls,"
@@ -96,32 +98,20 @@ class MineMap
     west:  3
   }
 
-  def initialize(width, length)
+  def initialize width, length
     @width = width
     @length = length
     @map = generate_map
     @coords = Array.new(2)
     @direction = DIRECTIONS[:north]
-    move_player(width / 2, length - 1)
-  end
-
-  def move_player(x, y)
-    @map[x][y] = nil
-    @coords = [x, y]
+    move_player [width / 2, length - 1]
   end
 
   def mine
     rock = get_rock_ahead
-
     puts "You have mined some #{rock.name}"
-    remove_rock_ahead
     move_forward
-
     return rock.score
-  end
-
-  def remove_rock_ahead
-    remove_rock get_coords_ahead
   end
 
   def get_rock_ahead
@@ -129,9 +119,12 @@ class MineMap
     @map[rock_coords[0]][rock_coords[1]] unless out_of_bounds? rock_coords
   end
 
+  def can_move_forward?
+    !out_of_bounds? get_coords_ahead
+  end
+
   def move_forward
-    new_coords = get_coords_ahead
-    @coords = new_coords
+    move_player get_coords_ahead
   end
 
   def player_escaped?
@@ -155,7 +148,7 @@ class MineMap
     @direction = @direction - 4 if @direction > 3
   end
 
-  def face(direction)
+  def face direction
     @direction = direction
   end
 
@@ -164,7 +157,7 @@ class MineMap
       (0...@width).each do |x|
         print "+"
 
-        if @map[x][y].nil? and !get_rock_ahead_in_direction [x, y], DIRECTIONS[:north]
+        if @map[x][y].nil? and !get_rock_in_direction [x, y], DIRECTIONS[:north]
           print "   "
         else
           print "---"
@@ -174,13 +167,13 @@ class MineMap
       puts "+"
 
       (0...@width).each do |x|
-        if @map[x][y].nil? and !get_rock_ahead_in_direction [x, y], DIRECTIONS[:west]
+        if @map[x][y].nil? and !get_rock_in_direction [x, y], DIRECTIONS[:west]
           print " "
         else
           print "|"
         end
         print " "
-        if @map[x][y] and [x, y] == get_coords_ahead
+        if @map[x][y] and @map[x][y].touched?
           print @map[x][y].abbr
         elsif [x, y] == @coords
           print player_symbol
@@ -198,14 +191,31 @@ class MineMap
 
   private #####################################################################
 
-  def out_of_bounds? coords
-    @coords[0] < 0 ||
-      @coords[1] < 0 ||
-      @coords[0] >= @width ||
-      @coords[1] >= @length
+  def move_player coords
+    x = coords[0]
+    y = coords[1]
+
+    @map[x][y] = nil
+    @coords = [x, y]
+
+    DIRECTIONS.values.each do |dir|
+      rock = get_rock_in_direction [x, y], dir
+      rock.touch if rock
+    end
   end
 
-  def remove_rock(coords)
+  def out_of_bounds? coords
+    coords[0] < 0 ||
+      coords[1] < 0 ||
+      coords[0] >= @width ||
+      coords[1] >= @length
+  end
+
+  def remove_rock_ahead
+    remove_rock get_coords_ahead
+  end
+
+  def remove_rock coords
     @map[coords[0]][coords[1]] = nil
   end
 
@@ -223,10 +233,10 @@ class MineMap
   end
 
   def get_coords_ahead
-    get_coords_ahead_in_direction @coords, @direction
+    get_coords_in_direction @coords, @direction
   end
 
-  def get_coords_ahead_in_direction coords, direction
+  def get_coords_in_direction coords, direction
     case direction
     when DIRECTIONS[:north]
       [coords[0], coords[1] - 1]
@@ -236,13 +246,15 @@ class MineMap
       [coords[0], coords[1] + 1]
     when DIRECTIONS[:west]
       [coords[0] - 1, coords[1]]
+    else
+      raise "Invalid direction given"
     end
   end
 
-  def get_rock_ahead_in_direction coords, direction
-    coords = get_coords_ahead_in_direction coords, direction
-    return nil if out_of_bounds? coords
-    @map[coords[0]][coords[1]]
+  def get_rock_in_direction coords, direction
+    new_coords = get_coords_in_direction coords, direction
+    return nil if out_of_bounds? new_coords
+    @map[new_coords[0]][new_coords[1]]
   end
 
   def generate_map
@@ -269,6 +281,7 @@ class Rock
 
   def initialize
     @name = weighted_sample ROCK_STATES.keys
+    @touched = false
   end
 
   def silverfish?
@@ -285,6 +298,15 @@ class Rock
 
   def abbr
     @name[0]
+  end
+
+  def touch
+    @touched = true
+  end
+
+  # Did not use attr_reader because it did not provide the '?'
+  def touched?
+    @touched
   end
 
   private #####################################################################
