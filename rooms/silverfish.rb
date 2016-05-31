@@ -1,30 +1,68 @@
 class SilverfishRoom
+  def initialize
+    @done
+  end
+
+  def play
+    while !@done
+      describe
+      act Game.get_input
+    end
+  end
+
+  private #####################################################################
+
+  def act choice
+    if choice.include? "mine"
+      puts "With what, your hands!?"
+    elsif choice.include? "search"
+      puts "You have discovered a pickaxe!"
+      @done = true
+      sleep 1
+
+      MineRoom.new.play
+    elsif choice.include? "door"
+      puts "The door is locked."
+    else
+      puts "Sorry, I have no idea what you're talking about. Maybe try rephrasing?"
+    end
+    puts
+  end
+
+  def describe
+    puts "You are standing in a damp room, somewhere underground."
+    puts "Around you, water flows in small streams down the walls"
+    puts "and the sound of dripping is almost deafening. The room"
+    puts "appears to be hewn from the subterranian rock. As you"
+    puts "look around, you notice that the walls seem to have some"
+    puts "precious stones in them. Suddenly,the door slams shut"
+    puts "behind you.\n\n"
+  end
+end
+
+class MineRoom
   MAP_LENGTH = 9
   MAP_WIDTH = 9
 
   def initialize
     @score = 0
-    @pickaxe = false
     @map = MineMap.new(MAP_WIDTH, MAP_LENGTH)
   end
 
   def play
-    describe
+    Game.clear_screen
+    puts "\n\n"
 
     while not @map.player_escaped?
-      if @pickaxe
-        @map.print_map
+      @map.print_map
 
-        rock = @map.get_rock_ahead
-        if rock
-          puts rock.description
-        else
-          puts "There is nothing in front of you"
-        end
-      end
+      rock = @map.get_rock_ahead
+      puts rock ? rock.description : ""
 
       choice = Game.get_input
-      Game.clear_screen if @pickaxe
+
+      Game.clear_screen
+
       act choice, rock
       puts
     end
@@ -34,18 +72,16 @@ class SilverfishRoom
 
   def act choice, rock
     if choice.include? "mine"
-      if @pickaxe
-        if !rock
-          puts "There's nothing there to mine, dummy!"
-        elsif rock.silverfish?
-          puts "Your score was: #{@score}"
-          Game.you_died "A silverfish attacks you, and you die."
-        else
-          @score += @map.mine
-        end
+      if !rock
+        puts "There's nothing there to mine, dummy!"
+      elsif rock.silverfish?
+        puts "Your score was: #{@score}"
+        Game.you_died "A silverfish attacks you, and you die."
       else
-        puts "With what, your hands!?"
+        @score += @map.mine
       end
+    elsif choice.include? "search"
+      puts "You do not find anything new"
     elsif choice.include? "left"
       @map.turn_left
       puts
@@ -64,29 +100,11 @@ class SilverfishRoom
         @map.move_forward
         puts
       end
-    elsif choice.include? "search"
-      if @pickaxe
-        puts "You do not find anything new"
-      else
-        puts "You have discovered a pickaxe!"
-        @pickaxe = true
-        sleep 1
-        Game.clear_screen
-        puts
-      end
     elsif choice.include? "door"
       puts "The door is locked"
     else
       puts "Sorry, I have no idea what you're talking about. Maybe try rephrasing?"
     end
-  end
-
-  def describe
-    puts "You are standing in a damp room, somewhere underground."
-    puts "Around you, water flows in small streams down the walls,"
-    puts "and the sound of dripping is almost deafening. The room"
-    puts "appears to be hewn from the subterranian rock. Suddenly,"
-    puts "the door slams shut behind you.\n\n"
   end
 end
 
