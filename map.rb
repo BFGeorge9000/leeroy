@@ -1,6 +1,6 @@
 class Map
   def initialize
-    @rooms = [ SkeletonRoom, SilverfishRoom, TreasureRoom, WispRoom, OgreRoom, ChapelRoom, ChickenRoom ]
+    @rooms = [ SkeletonRoom, SilverfishRoom, TreasureRoom, WispRoom, OgreRoom, ChapelRoom, ChickenRoom, SnakeRoom ]
   end
 
   def play
